@@ -28,7 +28,7 @@ class QuestionsController extends Controller
     {
         $question  = new Question();
         
-        return view('questions.create',compact('quesntion'));
+        return view('questions.create',compact('question'));
     }
 
     /**
@@ -63,7 +63,7 @@ class QuestionsController extends Controller
      */
     public function edit(Question $question)
     {
-        //
+        return view('questions.edit', compact('question'));
     }
 
     /**
@@ -73,10 +73,22 @@ class QuestionsController extends Controller
      * @param  \App\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(AskQuestionRequest $request, Question $question)
     {
-        //
+        
+        $question->update($request->only('title', 'body'));
+
+        if ($request->expectsJson())
+        {
+            return response()->json([
+                'message' => "Your question has been updated.",
+                'body_html' => $question->body_html
+            ]);
+        }
+
+        return redirect('/questions')->with('success', "Your question has been updated.");
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -86,6 +98,9 @@ class QuestionsController extends Controller
      */
     public function destroy(Question $question)
     {
-        //
+        
+        $question->delete();
+
+        return redirect('/questions')->with('success', "Your question has been deleted.");
     }
 }
